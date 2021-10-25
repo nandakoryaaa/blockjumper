@@ -18,11 +18,12 @@ public class RowShifter
     public void Stop()
     {
         _isActive = false;
+        _progress = 0;
     }
     
     public void Update(Row[] rows)
     {
-        if (!_isActive)
+        if (!this.IsActive())
         {
             return;
         }
@@ -35,8 +36,7 @@ public class RowShifter
         _progress++;
         if (_progress > _frameCount)
         {
-            _progress = 0;
-            _isActive = false;
+            this.Stop();
             this.ShiftRows(rows);
         }
     }
@@ -58,5 +58,10 @@ public class RowShifter
         row.blocks = blocks;
         row.Reset();
         row.Fill();
+    }
+
+    public bool IsActive()
+    {
+        return _isActive;
     }
 }

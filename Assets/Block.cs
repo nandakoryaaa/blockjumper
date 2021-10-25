@@ -8,6 +8,7 @@ public class Block
     private GameObject _gmo;
 	private Vector3[] _vertices;
 	private Vector3 _v = new Vector3(0, 0, 0);
+    private Rigidbody _rigidBody;
 
     public Block(int offset, float z, int h, int w, Color32 color)
     {
@@ -27,6 +28,7 @@ public class Block
 
         _vertices = new Vector3[]
         {
+            
             new Vector3(0, h, 0), new Vector3(0, h, h), new Vector3(w, h, h), new Vector3(w, h, 0),
             new Vector3(0, 0, 0), new Vector3(0, h, 0), new Vector3(w, h, 0), new Vector3(w, 0, 0),
             new Vector3(w, 0, 0), new Vector3(w, h, 0), new Vector3(w, h, h), new Vector3(w, 0, h),
@@ -46,6 +48,22 @@ public class Block
             Vector3.back, Vector3.back, Vector3.back, Vector3.back,
             Vector3.right, Vector3.right, Vector3.right, Vector3.right
         };
+
+        _rigidBody = _gmo.AddComponent<Rigidbody>();
+        _rigidBody.mass = 1;
+        this.DisablePhysics();
+    }
+
+    public void EnablePhysics(bool withGravity = false)
+    {
+        _rigidBody.detectCollisions = true;
+        _rigidBody.useGravity = withGravity;
+    }
+
+    public void DisablePhysics()
+    {
+        _rigidBody.detectCollisions = false;
+        _rigidBody.useGravity = false;
     }
 
     public void Update(int offset, int w, Color32 color)

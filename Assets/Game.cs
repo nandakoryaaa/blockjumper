@@ -8,6 +8,7 @@ public class Game : MonoBehaviour
     private Player _player;
 	private RowShifter _rowShifter;
 	private int _dist = Row.SPACING;
+	private BlockSolver _solver;
 
     public void Start()
     {
@@ -26,6 +27,7 @@ public class Game : MonoBehaviour
 		Row row = _rows[0];
 		_player.parent = row.blocks[row.head];
 		_rowShifter = new RowShifter();
+		_solver = new BlockSolver();
     }
 
     void Update()
@@ -35,12 +37,21 @@ public class Game : MonoBehaviour
             row.Update();
         }
 
-		if (this._player.IsJumping())
+        bool playerJumpState = _player.IsJumping();
+	
+		if (playerJumpState)
 		{
-			_player.Update();
-			_rowShifter.Update(_rows);
+            _rowShifter.Update(_rows);
 		}
-		else if (Input.GetMouseButtonDown(0))
+
+    	_player.Update();
+
+        if (!_player.IsJumping() && playerJumpState)
+        {
+            _solver.Solve(_player, _rows[1]);
+        }
+	
+        if (_player.IsIdle() && Input.GetMouseButtonDown(0))
 		{
 			_player.BeginJump(_dist, 0.3f, 0.01f);
 			if (_dist == 0)

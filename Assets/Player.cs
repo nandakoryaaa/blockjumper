@@ -4,6 +4,7 @@ public class Player
 {
     public const int IDLE = 0;
     public const int JUMP = 1;
+    public const int DEAD = 2;
     
     public Block parent = null;
     public Block body = null;
@@ -16,7 +17,7 @@ public class Player
     private int _progress;
     private int _frameCount;
     private float _startZ;
-        
+
     public Player()
     {
         this.body = new Block(0, 0, Row.BLOCK_SIZE, Row.BLOCK_SIZE, new Color32(255, 255, 255, 0));
@@ -34,7 +35,7 @@ public class Player
         _progress = 0;
         _startZ = _position.z;
         _frameCount = (int) (speed * 2 / gravity);
-        this.parent = null;
+        this.Detach();
     }
 
     public void EndJump()
@@ -57,16 +58,47 @@ public class Player
             }
             this.body.SetPosition(_position);
         }
+        else
+        {
+            if (this.IsAttached())
+            {
+                if (this.body.IsActive())
+                {
+                    this.body.SetX(this.parent.GetX() - _position.x);
+                }
+                else
+                {
+                    this.Detach();
+                }
+            }
+        }
     }
 
     public int GetJumpFrameCount()
     {
         return _frameCount;
     }
-    
+
+    public void Attach(Block block)
+    {
+        this.parent = block;
+        _position.x = block.GetX() - _position.x;
+    }
+
+    public void Detach()
+    {
+        _position.x = parent.GetX() - _position.x;
+        this.parent = null;
+    }
+
     public bool IsJumping()
     {
         return _status == JUMP;
+    }
+
+    public bool IsIdle()
+    {
+        return _status == IDLE;
     }
 
     public bool IsAttached()
