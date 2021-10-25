@@ -1,6 +1,6 @@
 public interface IRowStrategy
 {
-    public void update(Row row);
-    public void addBlock(Row row);
-    public bool canFill(Row row);
+    public void Update(Row row);
+    public void AddBlock(Row row);
+    public bool CanFill(Row row);
 }

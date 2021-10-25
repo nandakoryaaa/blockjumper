@@ -19,71 +19,86 @@ public class Row
 
     public IRowStrategy strategy = null;
     public Block[] blocks = new Block[MAX_BLOCKS];
-    private System.Random rand = null;
+    
+    private System.Random _rand = null;
 
     public Row(Game game, int num, IRowStrategy strategy)
     {
-        this.rand = game.random;
+        this._rand = game.random;
         this.num = num;
-		this.setDepthOffset(0);
+		this.SetZ(0);
         this.strategy = strategy;
-        this.fill();
+        this.Fill();
     }
 
-	public void setDepthOffset(float offset)
+	public void SetZ(float offset)
 	{
 		this.z = this.num * SPACING + offset;
 	}
 	
-    public void reset()
+    public void Reset()
     {
-         this.head = 0;
-         this.tail = 0;
-         for (int i = 0; i < MAX_BLOCKS; i++) {
-            if (!(this.blocks[i] is null)) {
-				this.blocks[i].deactivate();
-		 	}
-         }
+        this.head = 0;
+        this.tail = 0;
+        foreach(Block b in this.blocks)
+        {
+            if (!(b is null))
+            {
+                b.Deactivate();
+            }
+        }
     }
-    
-    public Block initBlock(int pos)
-    {
-        int width = BLOCK_SIZE_HALF3 + rand.Next(4) * Row.BLOCK_SIZE_HALF;
-        int offset = Row.BLOCK_SIZE_HALF3 + rand.Next(4) * Row.BLOCK_SIZE_HALF;
-        Color32 color = new Color32((byte) rand.Next(256), (byte) rand.Next(256), (byte) rand.Next(256), 0);
 
-        if (this.blocks[pos] is null) {
+    public Block InitBlock(int pos)
+    {
+        int width = BLOCK_SIZE_HALF3 + _rand.Next(4) * Row.BLOCK_SIZE_HALF;
+        int offset = Row.BLOCK_SIZE_HALF3 + _rand.Next(4) * Row.BLOCK_SIZE_HALF;
+        var color = new Color32((byte) _rand.Next(256), (byte) _rand.Next(256), (byte) _rand.Next(256), 0);
+
+        if (this.blocks[pos] is null)
+		{
             this.blocks[pos] = new Block(offset, this.z, BLOCK_SIZE, width, color);
-        } else {
-			this.blocks[pos].update(offset, width, color);
+        }
+		else
+		{
+			this.blocks[pos].Update(offset, width, color);
         }
 
-        this.blocks[pos].activate();
+        this.blocks[pos].Activate();
 
         return this.blocks[pos];
     }
     
-    public void update()
+    public void Update()
     {
-        this.strategy.update(this);
+        this.strategy.Update(this);
     }
 
-    public void fill()
+    public void Fill()
     {
-        while (this.strategy.canFill(this)) {
-            this.strategy.addBlock(this);
+        while (this.strategy.CanFill(this))
+        {
+            this.strategy.AddBlock(this);
         }
     }
 
-    public int next(int pos)
+    public int Next(int pos)
     {
         pos++;
         return pos < this.blocks.Length ? pos : 0;
     }
 
-    public int prev(int pos)
+    public int Prev(int pos)
     {
         pos--;
         return pos < 0 ? this.blocks.Length - 1 : pos;
+    }
+
+    public void CopyFrom(Row row)
+    {
+        this.blocks = row.blocks;
+        this.strategy = row.strategy;
+        this.head = row.head;
+        this.tail = row.tail;
     }
 }

@@ -4,34 +4,35 @@ public class Block
 {
     public int offset;
     public int width;
-    public GameObject gmo;
-	public Vector3[] vertices;
-	private Vector3 v = new Vector3(0, 0, 0);
+
+    private GameObject _gmo;
+	private Vector3[] _vertices;
+	private Vector3 _v = new Vector3(0, 0, 0);
 
     public Block(int offset, float z, int h, int w, Color32 color)
     {
         this.offset = offset;
         this.width = w;
-        this.gmo = new GameObject();
+        _gmo = new GameObject();
 		
-		this.v.z = z;
-        this.gmo.transform.position = this.v;
+		_v.z = z;
+        _gmo.transform.position = _v;
 
-        MeshRenderer meshRenderer = this.gmo.AddComponent<MeshRenderer>();
+        var meshRenderer = _gmo.AddComponent<MeshRenderer>();
         meshRenderer.material = new Material(Shader.Find("Standard"));
         meshRenderer.material.SetColor("_Color", color);
         
-        MeshFilter meshFilter = this.gmo.AddComponent<MeshFilter>();
+        var meshFilter = _gmo.AddComponent<MeshFilter>();
         meshFilter.mesh = new Mesh();
 
-        this.vertices = new Vector3[]
+        _vertices = new Vector3[]
         {
             new Vector3(0, h, 0), new Vector3(0, h, h), new Vector3(w, h, h), new Vector3(w, h, 0),
             new Vector3(0, 0, 0), new Vector3(0, h, 0), new Vector3(w, h, 0), new Vector3(w, 0, 0),
             new Vector3(w, 0, 0), new Vector3(w, h, 0), new Vector3(w, h, h), new Vector3(w, 0, h),
         };
 
-		meshFilter.mesh.vertices = this.vertices;
+		meshFilter.mesh.vertices = _vertices;
         meshFilter.mesh.triangles = new int[]
         {
             0, 1, 2, 0, 2, 3,
@@ -47,78 +48,78 @@ public class Block
         };
     }
 
-    public void update(int offset, int w, Color32 color)
+    public void Update(int offset, int w, Color32 color)
     {
         this.offset = offset;
         this.width = w;
 
-        this.vertices[2][0] = w;
-        this.vertices[3][0] = w;
-        this.vertices[6][0] = w;
-        this.vertices[7][0] = w;
-        this.vertices[8][0] = w;
-        this.vertices[9][0] = w;
-        this.vertices[10][0] = w;
-        this.vertices[11][0] = w;
+        _vertices[2][0] = w;
+        _vertices[3][0] = w;
+        _vertices[6][0] = w;
+        _vertices[7][0] = w;
+        _vertices[8][0] = w;
+        _vertices[9][0] = w;
+        _vertices[10][0] = w;
+        _vertices[11][0] = w;
 
-		MeshFilter meshFilter = this.gmo.GetComponent<MeshFilter>();
- 		meshFilter.mesh.vertices = this.vertices;
+		var meshFilter = _gmo.GetComponent<MeshFilter>();
+ 		meshFilter.mesh.vertices = _vertices;
 		meshFilter.mesh.RecalculateBounds();
 
-        MeshRenderer meshRenderer = this.gmo.GetComponent<MeshRenderer>();
-        meshRenderer.material.SetColor("_Color", color);
+        _gmo.GetComponent<MeshRenderer>()
+        	.material.SetColor("_Color", color);
     }
 
-    public void activate()
+    public void Activate()
     {
-        this.gmo.SetActive(true);
+        _gmo.SetActive(true);
     }
     
-    public void deactivate()
+    public void Deactivate()
     {
-        this.gmo.SetActive(false);
+        _gmo.SetActive(false);
     }
 
-	public bool isActive() {
-		return this.gmo.activeSelf;
+	public bool IsActive() {
+		return _gmo.activeSelf;
 	}
 
-	public void setPosition(Vector3 pos) {
-        this.gmo.transform.position = pos;
+	public void SetPosition(Vector3 pos) {
+        _gmo.transform.position = pos;
 	}
 
-	public Vector3 getPosition() {
-		return this.gmo.transform.position;
+	public Vector3 GetPosition() {
+		return _gmo.transform.position;
 	}
 
-    public void setX(float x)
+    public void SetX(float x)
     {
-		this.v = this.gmo.transform.position;
-		this.v.x = x;
-        this.gmo.transform.position = this.v;
+		_v = _gmo.transform.position;
+		_v.x = x;
+        _gmo.transform.position = _v;
     }
 
-    public void setY(float y)
+    public void SetY(float y)
     {
-		this.v = this.gmo.transform.position;
-		this.v.y = y;
-        this.gmo.transform.position = this.v;
+		_v = _gmo.transform.position;
+		_v.y = y;
+        _gmo.transform.position = _v;
     }
 
-    public float getX()
+    public float GetX()
     {
-        return this.gmo.transform.position.x;
+        return _gmo.transform.position.x;
     }
 
-    public float getY()
+    public float GetY()
     {
-        return this.gmo.transform.position.y;
+        return _gmo.transform.position.y;
     }
 
-    public void moveX(float dist)
+    public void MoveX(float dist)
     {
-		this.v = this.gmo.transform.position;
-		this.v.x += dist;
-        this.gmo.transform.position = v;
+		_v = _gmo.transform.position;
+		_v.x += dist;
+        _gmo.transform.position = _v;
     }
 }

@@ -2,47 +2,53 @@ using UnityEngine;
 
 public class RowStrategyRight : IRowStrategy
 {
-    private Vector3 v = new Vector3(0, 0, 0);
-    public void update(Row row)
+    private Vector3 _v = new Vector3(0, 0, 0);
+    
+    public void Update(Row row)
     {
+        _v.z = row.z;
         Block b;
-        for (int i = row.head; i != row.tail; i = row.next(i)) {
+        for (int i = row.head; i != row.tail; i = row.Next(i))
+        {
             b = row.blocks[i];
-            this.v[0] = b.getX() + row.speed;
-            this.v[2] = row.z;
-            b.setPosition(this.v);
+            _v.x = b.GetX() + row.speed;
+            b.SetPosition(_v);
+        }
+        
+        b = row.blocks[row.Prev(row.tail)];
+        if (b.GetX() >= Row.RIGHT_BORDER)
+        {
+            row.tail = row.Prev(row.tail);
+            row.blocks[row.tail].Deactivate();
         }
 
-        b = row.blocks[row.prev(row.tail)];
-        if (b.getX() >= Row.RIGHT_BORDER) {
-            row.tail = row.prev(row.tail);
-            row.blocks[row.tail].deactivate();
-        }
-
-        row.fill();
+        row.Fill();
     }
     
-    public void addBlock(Row row)
+    public void AddBlock(Row row)
     {
-        int newHead = row.prev(row.head);
-        Block b = row.initBlock(newHead);
-        if (row.head == row.tail) {
-            this.v[0] = Row.RIGHT_BORDER - b.width;
-        } else {
-            this.v[0] = row.blocks[row.head].getX() - b.offset - b.width;
+        int newHead = row.Prev(row.head);
+        Block b = row.InitBlock(newHead);
+        if (row.head == row.tail)
+        {
+            _v.x = Row.RIGHT_BORDER - b.width;
+        }
+        else
+        {
+            _v.x = row.blocks[row.head].GetX() - b.offset - b.width;
         }
 
-        this.v[2] = row.z;
-        b.setPosition(this.v);
+        _v.z = row.z;
+        b.SetPosition(_v);
         row.head = newHead;
     }	
 
-    public bool canFill(Row row)
+    public bool CanFill(Row row)
     {
         if (row.head == row.tail) {
             return true;
         }
         
-        return row.blocks[row.head].getX() >= Row.LEFT_BORDER;
+        return row.blocks[row.head].GetX() >= Row.LEFT_BORDER;
     }
 }

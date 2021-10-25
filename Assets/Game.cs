@@ -3,15 +3,16 @@ using UnityEngine;
 public class Game : MonoBehaviour
 {
     public System.Random random;
-    private Row[] rows;
-    private Player player;
-	private RowShifter rowShifter;
-	private int dist = Row.SPACING;
+
+    private Row[] _rows;
+    private Player _player;
+	private RowShifter _rowShifter;
+	private int _dist = Row.SPACING;
 
     public void Start()
     {
         this.random = new System.Random();
-        this.rows = new Row[]
+        _rows = new Row[]
         {
             new Row(this, 0, new RowStrategyStatic()),
             new Row(this, 1, new RowStrategyRight()),
@@ -20,32 +21,38 @@ public class Game : MonoBehaviour
             new Row(this, 4, new RowStrategyLeft())
         };
 		
-		this.player = new Player();
-		this.player.body.setY(Row.BLOCK_SIZE);
-		Row row = this.rows[0];
-		this.player.parent = row.blocks[row.head];
-		this.rowShifter = new RowShifter();
+		_player = new Player();
+		_player.body.SetY(Row.BLOCK_SIZE);
+		Row row = _rows[0];
+		_player.parent = row.blocks[row.head];
+		_rowShifter = new RowShifter();
     }
 
     void Update()
     {
-        foreach (Row row in this.rows) {
-            row.update();
+        foreach (Row row in _rows)
+        {
+            row.Update();
         }
-		if (this.player.isJumping()) {
-			this.player.update();
-			this.rowShifter.update(this.rows);
-		} else if (Input.GetMouseButtonDown(0)) {
-			this.player.beginJump(this.dist, 0.3f, 0.01f);
-			int count = this.player.getJumpFrameCount();
-			if (this.dist == 0) {
-				this.rowShifter.start(Row.SPACING, count);
+
+		if (this._player.IsJumping())
+		{
+			_player.Update();
+			_rowShifter.Update(_rows);
+		}
+		else if (Input.GetMouseButtonDown(0))
+		{
+			_player.BeginJump(_dist, 0.3f, 0.01f);
+			if (_dist == 0)
+			{
+				_rowShifter.Start(Row.SPACING, _player.GetJumpFrameCount());
 			}
-			this.dist = 0;		
+			_dist = 0;
 		}
     }
     
-    void Awake () {
+    void Awake ()
+	{
         //QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
     }
