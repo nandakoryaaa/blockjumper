@@ -4,66 +4,77 @@ public class Block
 {
     public int offset;
     public int width;
+    public GameObject gameObject;
 
-    private GameObject _gmo;
 	private Vector3[] _vertices;
 	private Vector3 _v = new Vector3(0, 0, 0);
-    private Rigidbody _rigidBody;
+    private Collider _collider;
 
     public Block(int offset, float z, int h, int w, Color32 color)
     {
         this.offset = offset;
         this.width = w;
-        _gmo = new GameObject();
+        this.gameObject = new GameObject();
 		
 		_v.z = z;
-        _gmo.transform.position = _v;
+        this.gameObject.transform.position = _v;
 
-        var meshRenderer = _gmo.AddComponent<MeshRenderer>();
+        var meshRenderer = this.gameObject.AddComponent<MeshRenderer>();
         meshRenderer.material = new Material(Shader.Find("Standard"));
         meshRenderer.material.SetColor("_Color", color);
-        
-        var meshFilter = _gmo.AddComponent<MeshFilter>();
+
+        var meshFilter = this.gameObject.AddComponent<MeshFilter>();
         meshFilter.mesh = new Mesh();
 
+        Vector3 v0 = new Vector3(0, 0, 0); //     v5----w----v6
+        Vector3 v1 = new Vector3(0, 0, h); //     /|         /|
+        Vector3 v2 = new Vector3(w, 0, h); //    / |        / |
+        Vector3 v3 = new Vector3(w, 0, 0); //   v4-+------v7  |
+        Vector3 v4 = new Vector3(0, h, 0); //   |  v1------+--v2    Y  Z
+        Vector3 v5 = new Vector3(0, h, h); //   h /        | h      | /
+        Vector3 v6 = new Vector3(w, h, h); //   |/         |/       |/
+        Vector3 v7 = new Vector3(w, h, 0); //   v0--------v3        0------ X
+    
         _vertices = new Vector3[]
         {
-            
-            new Vector3(0, h, 0), new Vector3(0, h, h), new Vector3(w, h, h), new Vector3(w, h, 0),
-            new Vector3(0, 0, 0), new Vector3(0, h, 0), new Vector3(w, h, 0), new Vector3(w, 0, 0),
-            new Vector3(w, 0, 0), new Vector3(w, h, 0), new Vector3(w, h, h), new Vector3(w, 0, h),
+            v0, v1, v5, v4, // left
+            v0, v1, v2, v3, // bottom
+            v3, v7, v6, v2, // right
+            v4, v5, v6, v7, // top
+            v0, v4, v7, v3 // front
         };
 
 		meshFilter.mesh.vertices = _vertices;
         meshFilter.mesh.triangles = new int[]
         {
-            0, 1, 2, 0, 2, 3,
-            4, 5, 6, 4, 6, 7,
-            8, 9, 10, 8, 10, 11
+             0,  1,  2,  0,  2,  3,
+             4,  7,  6,  4,  6,  5,
+             8,  9, 10,  8, 10, 11,
+            12, 13, 14, 12, 14, 15,
+            16, 17, 18, 16, 18, 19 
         };
 
         meshFilter.mesh.normals = new Vector3[]
         {
+            Vector3.left, Vector3.left, Vector3.left, Vector3.left,
+            Vector3.down, Vector3.down, Vector3.down, Vector3.down,
+            Vector3.right, Vector3.right, Vector3.right, Vector3.right,
             Vector3.up, Vector3.up, Vector3.up, Vector3.up,
             Vector3.back, Vector3.back, Vector3.back, Vector3.back,
-            Vector3.right, Vector3.right, Vector3.right, Vector3.right
         };
 
-        _rigidBody = _gmo.AddComponent<Rigidbody>();
-        _rigidBody.mass = 1;
-        this.DisablePhysics();
+        _collider = this.gameObject.AddComponent<BoxCollider>();
+        this.DisableCollisions();
     }
 
-    public void EnablePhysics(bool withGravity = false)
+    public void EnableCollisions(bool withGravity = false)
     {
-        _rigidBody.detectCollisions = true;
-        _rigidBody.useGravity = withGravity;
+        _collider.enabled = true;
     }
 
-    public void DisablePhysics()
+    public void DisableCollisions()
     {
-        _rigidBody.detectCollisions = false;
-        _rigidBody.useGravity = false;
+        _collider.enabled = false;
     }
 
     public void Update(int offset, int w, Color32 color)
@@ -71,73 +82,76 @@ public class Block
         this.offset = offset;
         this.width = w;
 
-        _vertices[2][0] = w;
-        _vertices[3][0] = w;
-        _vertices[6][0] = w;
-        _vertices[7][0] = w;
-        _vertices[8][0] = w;
-        _vertices[9][0] = w;
-        _vertices[10][0] = w;
-        _vertices[11][0] = w;
+        _vertices[6].x = w;
+        _vertices[7].x = w;
+        _vertices[8].x = w;
+        _vertices[9].x = w;
+        _vertices[10].x = w;
+        _vertices[11].x = w;
+        _vertices[14].x = w;
+        _vertices[15].x = w;
+        _vertices[18].x = w;
+        _vertices[19].x = w;
 
-		var meshFilter = _gmo.GetComponent<MeshFilter>();
+		var meshFilter = this.gameObject.GetComponent<MeshFilter>();
  		meshFilter.mesh.vertices = _vertices;
 		meshFilter.mesh.RecalculateBounds();
 
-        _gmo.GetComponent<MeshRenderer>()
+        this.gameObject.GetComponent<MeshRenderer>()
         	.material.SetColor("_Color", color);
     }
 
     public void Activate()
     {
-        _gmo.SetActive(true);
+        this.gameObject.SetActive(true);
     }
     
     public void Deactivate()
     {
-        _gmo.SetActive(false);
+        this.gameObject.SetActive(false);
+        this.DisableCollisions();
     }
 
 	public bool IsActive() {
-		return _gmo.activeSelf;
+        return this.gameObject.activeSelf;
 	}
 
 	public void SetPosition(Vector3 pos) {
-        _gmo.transform.position = pos;
+        this.gameObject.transform.position = pos;
 	}
 
 	public Vector3 GetPosition() {
-		return _gmo.transform.position;
+		return this.gameObject.transform.position;
 	}
 
     public void SetX(float x)
     {
-		_v = _gmo.transform.position;
+		_v = this.gameObject.transform.position;
 		_v.x = x;
-        _gmo.transform.position = _v;
+        this.gameObject.transform.position = _v;
     }
 
     public void SetY(float y)
     {
-		_v = _gmo.transform.position;
+		_v = this.gameObject.transform.position;
 		_v.y = y;
-        _gmo.transform.position = _v;
+        this.gameObject.transform.position = _v;
     }
 
     public float GetX()
     {
-        return _gmo.transform.position.x;
+        return this.gameObject.transform.position.x;
     }
 
     public float GetY()
     {
-        return _gmo.transform.position.y;
+        return this.gameObject.transform.position.y;
     }
 
     public void MoveX(float dist)
     {
-		_v = _gmo.transform.position;
+		_v = this.gameObject.transform.position;
 		_v.x += dist;
-        _gmo.transform.position = _v;
+        this.gameObject.transform.position = _v;
     }
 }

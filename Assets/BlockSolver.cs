@@ -20,16 +20,17 @@ public class BlockSolver
             }
 
             player.Attach(b);
+            player.DisablePhysics();
             break;
 		}
 
         if (!player.IsAttached())
         {
             player.body.SetY(Row.BLOCK_SIZE + 0.01f);
-            player.body.EnablePhysics(true);
+            player.EnablePhysics();
             for (int i = row.head; i != row.tail; i = row.Next(i))
             {
-                row.blocks[i].EnablePhysics(true);
+                row.blocks[i].EnableCollisions();
             }
         }
     }

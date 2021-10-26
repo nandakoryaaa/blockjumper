@@ -17,6 +17,7 @@ public class Player
     private int _progress;
     private int _frameCount;
     private float _startZ;
+    private Rigidbody _rigidBody;
 
     public Player()
     {
@@ -24,10 +25,33 @@ public class Player
         _position = this.body.GetPosition();
         _position.y = Row.BLOCK_SIZE;
         this.body.SetPosition(_position);
+        _rigidBody = this.body.gameObject.AddComponent<Rigidbody>();
+        _rigidBody.mass = 1;
+        _rigidBody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
+        this.DisablePhysics();
     }
+
+    public void EnablePhysics()
+    {
+        _rigidBody.detectCollisions = true;
+        _rigidBody.useGravity = true;
+        this.body.EnableCollisions();
+    }
+
+    public void DisablePhysics()
+    {
+        this.body.DisableCollisions();
+        _rigidBody.detectCollisions = false;
+        _rigidBody.useGravity = false;
+        _rigidBody.velocity = new Vector3(0f, 0f, 0f);
+        _rigidBody.angularVelocity = new Vector3(0f, 0f, 0f);
+        this.body.gameObject.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+    }
+
 
     public void BeginJump(int dist, float speed, float gravity)
     {
+        this.DisablePhysics();
         _status = JUMP;
         _gravity = gravity;
         _dy = speed;
