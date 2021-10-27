@@ -30,6 +30,9 @@ public class Player
         this.body.SetPosition(_position);
 
         _rigidBody = this.body.gameObject.AddComponent<Rigidbody>();
+        _rigidBody.isKinematic = false;
+        _rigidBody.drag = 0;
+        _rigidBody.mass = 5000;
         _rigidBody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
 
         this.EndFall();

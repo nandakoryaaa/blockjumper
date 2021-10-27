@@ -12,6 +12,8 @@ public class Block
     private MeshRenderer _renderer;
     private bool _renderPending = true;
 
+    //private Rigidbody _rigidBody;
+
     public Block(int offset, float z, int h, int w, Color32 color)
     {
         this.offset = offset;
@@ -23,7 +25,6 @@ public class Block
 
         _renderer = this.gameObject.AddComponent<MeshRenderer>();
         _renderer.material = new Material(Shader.Find("Standard"));
-        _renderer.material.SetColor("_Color", color);
 
         var meshFilter = this.gameObject.AddComponent<MeshFilter>();
         meshFilter.mesh = new Mesh();
@@ -65,7 +66,13 @@ public class Block
             Vector3.back, Vector3.back, Vector3.back, Vector3.back,
         };
 
+        // _rigidBody = this.gameObject.AddComponent<Rigidbody>();
+        // _rigidBody.isKinematic = true;
+        // _rigidBody.useGravity = false;
+        // _rigidBody.drag = 10;
         _collider = this.gameObject.AddComponent<BoxCollider>();
+        this.SetColor(color);
+
     }
 
     public void Reshape(int offset, int w, Color32 color)
@@ -88,7 +95,7 @@ public class Block
             _vertices[19].x = w;
 
             var meshFilter = this.gameObject.GetComponent<MeshFilter>();
-             meshFilter.mesh.vertices = _vertices;
+            meshFilter.mesh.vertices = _vertices;
             meshFilter.mesh.RecalculateBounds();
     
             _v = _collider.size;
@@ -97,7 +104,7 @@ public class Block
             _collider.center = _v / 2;
         }
 
-        _renderer.material.SetColor("_Color", color);
+        this.SetColor(color);
     }
 
     public void Activate()
@@ -162,9 +169,4 @@ public class Block
     {
         _renderer.material.SetColor("_Color", color);
     }
-
-    // public void debug() {
-    //     Debug.Log("x: " + this.GetX() + " w: " + this.width + " bounds: " + _renderer.bounds);
-    // }
-
 }
