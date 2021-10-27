@@ -26,12 +26,12 @@ public class Row
     {
         this._rand = game.random;
         this.num = num;
-        this.SetZ(0);
         this.strategy = strategy;
+        this.OffsetZ(0);
         this.Fill();
     }
 
-    public void SetZ(float offset)
+    public void OffsetZ(float offset)
     {
         this.z = this.num * SPACING + offset;
     }
@@ -40,7 +40,7 @@ public class Row
     {
         this.head = 0;
         this.tail = 0;
-        foreach(Block b in this.blocks)
+        foreach (Block b in this.blocks)
         {
             if (!(b is null))
             {
@@ -100,5 +100,10 @@ public class Row
         this.strategy = row.strategy;
         this.head = row.head;
         this.tail = row.tail;
+    }
+
+    public Block GetLastBlock()
+    {
+        return this.strategy.GetLastBlock(this);
     }
 }

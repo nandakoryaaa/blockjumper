@@ -57,4 +57,10 @@ public class RowStrategyLeft : IRowStrategy
 
         return (b.GetX() + b.width) < Row.RIGHT_BORDER;
     }
+
+    public Block GetLastBlock(Row row)
+    {
+        return row.blocks[row.Prev(row.tail)];
+    }
+
 }

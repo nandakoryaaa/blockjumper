@@ -37,25 +37,34 @@ public class Game : MonoBehaviour
             row.Update();
         }
 
-        bool playerJumpState = _player.IsJumping();
-    
-        if (playerJumpState)
+        if (_player.IsJumping())
         {
+            // Если игрок находится в прыжыке, надо двигать ряды ему навстречу
             _rowShifter.Update(_rows);
         }
 
         _player.Update();
 
-        if (!_player.IsJumping() && playerJumpState)
+        if (_player.IsUnsolved())
         {
+            // Солвер решает, что делать дальше с игроком
             _solver.Solve(_player, _rows[1]);
         }
-    
-        if (!_player.IsJumping() && Input.GetMouseButtonDown(0))
+        
+        if (_player.IsDead())
         {
+            Block b = _rows[1].GetLastBlock();
+            _player.Attach(b, (b.width - _player.body.width) / 2);
+        }
+    
+        // Прыжок можно начать, если игрок стоит на блоке
+        if (_player.IsAttached() && Input.GetMouseButtonDown(0))
+        {
+            // Дистанция прыжка при первом прыжке ненулевая, т.к. игрок прыгает с первого ряда на второй
             _player.BeginJump(_dist, 0.3f, 0.01f);
             if (_dist == 0)
             {
+                // С нулевой дистанцией игрок прыгает на месте, а ряды движутся ему навстречу
                 _rowShifter.Start(Row.SPACING, _player.GetJumpFrameCount());
             }
             _dist = 0;

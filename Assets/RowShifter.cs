@@ -7,6 +7,10 @@ public class RowShifter
     private int _progress;
     private bool _isActive;
     
+    /**
+     * @param dist дистанция сдвига
+     * @param framecount количество кадров, за которое нужно сдвинуть
+     */
     public void Start(int dist, int frameCount)
     {
         _dist = dist;
@@ -18,7 +22,7 @@ public class RowShifter
     public void Stop()
     {
         _isActive = false;
-        _progress = 0;
+        //_progress = 0;
     }
     
     public void Update(Row[] rows)
@@ -30,7 +34,7 @@ public class RowShifter
 
         foreach (Row row in rows)
         {
-            row.SetZ((float) -_progress * _dist / _frameCount);
+            row.OffsetZ((float) -_progress * _dist / _frameCount);
         }
 
         _progress++;
@@ -49,11 +53,11 @@ public class RowShifter
         for (int i = 0; i < len; i++)
         {
             rows[i].CopyFrom(rows[i + 1]);
-            rows[i].SetZ(0);
+            rows[i].OffsetZ(0);
         }
 
         Row row = rows[len];
-        row.SetZ(0);
+        row.OffsetZ(0);
         row.strategy = rows[len - 2].strategy; // will not work for rows < 3
         row.blocks = blocks;
         row.Reset();

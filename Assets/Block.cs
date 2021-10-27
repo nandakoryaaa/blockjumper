@@ -71,7 +71,9 @@ public class Block
     public void Reshape(int offset, int w, Color32 color)
     {
         this.offset = offset;
-        if (this.width != w) {
+
+        if (this.width != w)
+        {
             this.width = w;
 
             _vertices[5].x = w;
@@ -109,15 +111,18 @@ public class Block
         this.gameObject.SetActive(false);
     }
 
-    public bool IsActive() {
+    public bool IsActive()
+    {
         return this.gameObject.activeSelf;
     }
 
-    public void SetPosition(Vector3 pos) {
+    public void SetPosition(Vector3 pos)
+    {
         this.gameObject.transform.position = pos;
     }
 
-    public Vector3 GetPosition() {
+    public Vector3 GetPosition()
+    {
         return this.gameObject.transform.position;
     }
 
@@ -147,10 +152,15 @@ public class Block
 
     public bool IsVisible()
     {
-        bool result = _renderer.isVisible | _renderPending;
+        bool result = _renderer.isVisible || _renderPending;
         _renderPending = false;
 
         return result;
+    }
+
+    public void SetColor(Color32 color)
+    {
+        _renderer.material.SetColor("_Color", color);
     }
 
     // public void debug() {

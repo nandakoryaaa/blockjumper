@@ -8,6 +8,10 @@ public class BlockSolver
         int pWidth = player.body.width;
         int pHalfWidth = pWidth / 2;
 
+        /**
+         * Проверить блоки в текущем ряду на геометрическое пересечение с игроком.
+         * Проверка не делается через физику и коллизии, чтобы условие всегда срабатывало точно.
+         */
         for (int i = row.head; i != row.tail; i = row.Next(i))
         {
             Block b = row.blocks[i];
@@ -19,12 +23,12 @@ public class BlockSolver
                 continue;
             }
 
-            player.EndFall();
-            player.Attach(b);
+            player.Attach(b, pX - bX);
 
             break;
         }
 
+        // Если после проверки всех блоков игрок остался неприкреплённым, он начинает падать
         if (!player.IsAttached())
         {
             player.BeginFall();

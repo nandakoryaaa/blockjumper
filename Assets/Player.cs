@@ -2,15 +2,16 @@ using UnityEngine;
 
 public class Player
 {
-    public const int IDLE = 0;
+    public const int UNDEFINED = 0;
     public const int JUMP = 1;
-    public const int FALL = 2;
-    public const int DEAD = 3;
+    public const int UNSOLVED = 2;
+    public const int FALL = 3;
+    public const int DEAD = 4;
     
     public Block parent = null;
     public Block body = null;
 
-    private int _status = IDLE;
+    private int _status = UNDEFINED;
     private Vector3 _position;
     private float _dy = 0;
     private float _gravity = 0;
@@ -18,6 +19,7 @@ public class Player
     private int _progress;
     private int _frameCount;
     private float _startZ;
+
     private Rigidbody _rigidBody;
 
     public Player()
@@ -26,16 +28,22 @@ public class Player
         _position = this.body.GetPosition();
         _position.y = Row.BLOCK_SIZE;
         this.body.SetPosition(_position);
+
         _rigidBody = this.body.gameObject.AddComponent<Rigidbody>();
         _rigidBody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
+
         this.EndFall();
     }
 
+    /**
+     * Если прыжок не удался, включается физика для обработки падения.
+     * Rigidbody получает начальную скорость движения как после прыжка.
+     */
     public void BeginFall()
     {
         _rigidBody.detectCollisions = true;
         _rigidBody.useGravity = true;
-        _rigidBody.velocity = new Vector3(0f, _dy*50, 0f);
+        _rigidBody.velocity = new Vector3(0f, _dy * 50, 0f);
         _status = FALL;
     }
 
@@ -46,26 +54,31 @@ public class Player
         _rigidBody.velocity = Vector3.zero;
         _rigidBody.angularVelocity = Vector3.zero;
         this.body.gameObject.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+        _status = UNDEFINED;
     }
-
+    /**
+     * Прыжок делается без использования физики, чтобы высота, направление и дистанция всегда точно совпадали
+     */
     public void BeginJump(int dist, float speed, float gravity)
     {
-        this.EndFall();
-        _status = JUMP;
+        this.Detach();
         _gravity = gravity;
         _dy = speed;
         _dist = dist;
         _progress = 0;
         _startZ = _position.z;
         _frameCount = (int) (speed * 2 / gravity);
-        this.Detach();
+        _status = JUMP;
     }
 
+    /**
+     * В конце прыжка координаты приводятся к целевым
+     */
     public void EndJump()
     {
         _position.y = Row.BLOCK_SIZE;
         _position.z = _startZ + _dist;
-        _status = IDLE;
+        _status = UNSOLVED;
     }
 
     public void Update()
@@ -85,33 +98,59 @@ public class Player
         {
             if (this.IsAttached())
             {
-                if (this.body.IsActive())
-                {
-                    this.body.SetX(this.parent.GetX() - _position.x);
+                // Если родительский блок неактивен, игрок уехал на нём за край экрана
+                if (!this.parent.IsActive()) {
+                    this.Detach();
+                    _status = DEAD;
                 }
                 else
                 {
-                    this.Detach();
+                    this.body.SetPosition(this.parent.GetPosition() + _position);
                 }
+            }
+            else if (this.IsFalling() && this.body.GetY() < -10)
+            {
+                // Если игрок упал ниже плинтуса, то он умер
+                _status = DEAD;
             }
         }
     }
 
+    /**
+     * Сколько кадров займёт прыжок.
+     * Требуется для вычисления сдвига рядов в RowShifter
+     */
     public int GetJumpFrameCount()
     {
         return _frameCount;
     }
 
-    public void Attach(Block block)
+    public void Attach(Block block, float blockOffset)
     {
+        this.EndFall();
         this.parent = block;
-        _position.x = block.GetX() - _position.x;
+        //_blockOffset = blockOffset;
+        // позиция считается локальной относительно блока с момента прикрепления
+        _position.x = blockOffset;
+        _position.y = Row.BLOCK_SIZE;
+        _position.z = 0;
+        //this.body.SetPosition(_position);
+        _status = UNDEFINED;
     }
 
     public void Detach()
     {
-        _position.x = parent.GetX() - _position.x;
-        this.parent = null;
+        if (!(this.parent is null)) {
+            // После отделения от блока позиция будет считаться глобальной
+            _position += parent.GetPosition();
+            this.parent = null;
+        }
+        _status = UNDEFINED;
+    }
+
+    public bool IsAttached()
+    {
+        return !(this.parent is null);
     }
 
     public bool IsJumping()
@@ -119,13 +158,18 @@ public class Player
         return _status == JUMP;
     }
 
-    public bool IsIdle()
+    public bool IsFalling()
     {
-        return _status == IDLE;
+        return _status == FALL;
     }
 
-    public bool IsAttached()
+    public bool IsDead()
     {
-        return !(this.parent is null);
+        return _status == DEAD;
+    }
+
+    public bool IsUnsolved()
+    {
+        return _status == UNSOLVED;
     }
 }

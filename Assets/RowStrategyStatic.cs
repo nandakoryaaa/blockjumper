@@ -27,4 +27,9 @@ public class RowStrategyStatic : IRowStrategy
     {
         return row.head == row.tail;
     }
+
+    public Block GetLastBlock(Row row)
+    {
+        return row.blocks[row.head];
+    }
 }
