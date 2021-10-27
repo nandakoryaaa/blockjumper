@@ -15,7 +15,7 @@ public class Row
     public int head = 0;
     public int tail = 0;
     public float speed = 0.1f;
-	public float z = 0;
+    public float z = 0;
 
     public IRowStrategy strategy = null;
     public Block[] blocks = new Block[MAX_BLOCKS];
@@ -26,16 +26,16 @@ public class Row
     {
         this._rand = game.random;
         this.num = num;
-		this.SetZ(0);
+        this.SetZ(0);
         this.strategy = strategy;
         this.Fill();
     }
 
-	public void SetZ(float offset)
-	{
-		this.z = this.num * SPACING + offset;
-	}
-	
+    public void SetZ(float offset)
+    {
+        this.z = this.num * SPACING + offset;
+    }
+    
     public void Reset()
     {
         this.head = 0;
@@ -56,12 +56,12 @@ public class Row
         Color32 color = ColorHelper.CreateColor(_rand);
         
         if (this.blocks[pos] is null)
-		{
+        {
             this.blocks[pos] = new Block(offset, this.z, BLOCK_SIZE, width, color);
         }
-		else
-		{
-			this.blocks[pos].Reshape(offset, width, color);
+        else
+        {
+            this.blocks[pos].Reshape(offset, width, color);
         }
 
         this.blocks[pos].Activate();

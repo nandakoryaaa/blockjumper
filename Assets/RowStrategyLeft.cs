@@ -33,11 +33,11 @@ public class RowStrategyLeft : IRowStrategy
         Block b = row.InitBlock(row.tail);
 
         if (row.tail == row.head)
-		{
+        {
             _v.x = Row.LEFT_BORDER;
         }
-		else
-		{
+        else
+        {
             Block lastBlock = row.blocks[row.Prev(row.tail)];
             _v.x = lastBlock.GetX() + lastBlock.width + b.offset;
         }

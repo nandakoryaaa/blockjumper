@@ -43,7 +43,7 @@ public class RowStrategyRight : IRowStrategy
         _v.z = row.z;
         b.SetPosition(_v);
         row.head = newHead;
-    }	
+    }
 
     public bool CanFill(Row row)
     {

@@ -76,7 +76,7 @@ public class Player
             _position.y += _dy;
             _dy -= _gravity;
             if (_position.y < Row.BLOCK_SIZE)
-			{
+            {
                 this.EndJump();
             }
             this.body.SetPosition(_position);

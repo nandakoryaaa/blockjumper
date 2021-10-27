@@ -23,7 +23,7 @@ public class BlockSolver
             player.Attach(b);
 
             break;
-		}
+        }
 
         if (!player.IsAttached())
         {

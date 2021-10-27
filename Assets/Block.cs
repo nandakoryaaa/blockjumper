@@ -6,8 +6,8 @@ public class Block
     public int width;
     public GameObject gameObject;
 
-	private Vector3[] _vertices;
-	private Vector3 _v = new Vector3(0, 0, 0);
+    private Vector3[] _vertices;
+    private Vector3 _v = new Vector3(0, 0, 0);
     private BoxCollider _collider;
     private MeshRenderer _renderer;
     private bool _renderPending = true;
@@ -17,8 +17,8 @@ public class Block
         this.offset = offset;
         this.width = w;
         this.gameObject = new GameObject();
-		
-		_v.z = z;
+        
+        _v.z = z;
         this.SetPosition(_v);
 
         _renderer = this.gameObject.AddComponent<MeshRenderer>();
@@ -46,7 +46,7 @@ public class Block
             v0, v4, v7, v3 // front
         };
 
-		meshFilter.mesh.vertices = _vertices;
+        meshFilter.mesh.vertices = _vertices;
         meshFilter.mesh.triangles = new int[]
         {
              0,  1,  2,  0,  2,  3,
@@ -85,9 +85,9 @@ public class Block
             _vertices[18].x = w;
             _vertices[19].x = w;
 
-		    var meshFilter = this.gameObject.GetComponent<MeshFilter>();
- 		    meshFilter.mesh.vertices = _vertices;
-		    meshFilter.mesh.RecalculateBounds();
+            var meshFilter = this.gameObject.GetComponent<MeshFilter>();
+             meshFilter.mesh.vertices = _vertices;
+            meshFilter.mesh.RecalculateBounds();
     
             _v = _collider.size;
             _v.x = w;
@@ -109,29 +109,29 @@ public class Block
         this.gameObject.SetActive(false);
     }
 
-	public bool IsActive() {
+    public bool IsActive() {
         return this.gameObject.activeSelf;
-	}
+    }
 
-	public void SetPosition(Vector3 pos) {
+    public void SetPosition(Vector3 pos) {
         this.gameObject.transform.position = pos;
-	}
+    }
 
-	public Vector3 GetPosition() {
-		return this.gameObject.transform.position;
-	}
+    public Vector3 GetPosition() {
+        return this.gameObject.transform.position;
+    }
 
     public void SetX(float x)
     {
-		_v = this.gameObject.transform.position;
-		_v.x = x;
+        _v = this.gameObject.transform.position;
+        _v.x = x;
         this.gameObject.transform.position = _v;
     }
 
     public void SetY(float y)
     {
-		_v = this.gameObject.transform.position;
-		_v.y = y;
+        _v = this.gameObject.transform.position;
+        _v.y = y;
         this.gameObject.transform.position = _v;
     }
 
