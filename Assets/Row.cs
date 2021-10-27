@@ -53,15 +53,15 @@ public class Row
     {
         int width = BLOCK_SIZE_HALF3 + _rand.Next(4) * Row.BLOCK_SIZE_HALF;
         int offset = Row.BLOCK_SIZE_HALF3 + _rand.Next(4) * Row.BLOCK_SIZE_HALF;
-        var color = new Color32((byte) _rand.Next(256), (byte) _rand.Next(256), (byte) _rand.Next(256), 0);
-
+        Color32 color = ColorHelper.CreateColor(_rand);
+        
         if (this.blocks[pos] is null)
 		{
             this.blocks[pos] = new Block(offset, this.z, BLOCK_SIZE, width, color);
         }
 		else
 		{
-			this.blocks[pos].Update(offset, width, color);
+			this.blocks[pos].Reshape(offset, width, color);
         }
 
         this.blocks[pos].Activate();

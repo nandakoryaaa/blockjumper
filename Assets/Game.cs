@@ -16,10 +16,10 @@ public class Game : MonoBehaviour
         _rows = new Row[]
         {
             new Row(this, 0, new RowStrategyStatic()),
-            new Row(this, 1, new RowStrategyRight()),
-            new Row(this, 2, new RowStrategyLeft()),
-            new Row(this, 3, new RowStrategyRight()),
-            new Row(this, 4, new RowStrategyLeft())
+            new Row(this, 1, new RowStrategyLeft()),
+            new Row(this, 2, new RowStrategyRight()),
+            new Row(this, 3, new RowStrategyLeft()),
+            new Row(this, 4, new RowStrategyRight()),
         };
 		
 		_player = new Player();
@@ -51,7 +51,7 @@ public class Game : MonoBehaviour
             _solver.Solve(_player, _rows[1]);
         }
 	
-        if (_player.IsIdle() && Input.GetMouseButtonDown(0))
+        if (!_player.IsJumping() && Input.GetMouseButtonDown(0))
 		{
 			_player.BeginJump(_dist, 0.3f, 0.01f);
 			if (_dist == 0)

@@ -4,7 +4,8 @@ public class Player
 {
     public const int IDLE = 0;
     public const int JUMP = 1;
-    public const int DEAD = 2;
+    public const int FALL = 2;
+    public const int DEAD = 3;
     
     public Block parent = null;
     public Block body = null;
@@ -26,32 +27,30 @@ public class Player
         _position.y = Row.BLOCK_SIZE;
         this.body.SetPosition(_position);
         _rigidBody = this.body.gameObject.AddComponent<Rigidbody>();
-        _rigidBody.mass = 1;
-        _rigidBody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
-        this.DisablePhysics();
+        _rigidBody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
+        this.EndFall();
     }
 
-    public void EnablePhysics()
+    public void BeginFall()
     {
         _rigidBody.detectCollisions = true;
         _rigidBody.useGravity = true;
-        this.body.EnableCollisions();
+        _rigidBody.velocity = new Vector3(0f, _dy*50, 0f);
+        _status = FALL;
     }
 
-    public void DisablePhysics()
+    public void EndFall()
     {
-        this.body.DisableCollisions();
         _rigidBody.detectCollisions = false;
         _rigidBody.useGravity = false;
-        _rigidBody.velocity = new Vector3(0f, 0f, 0f);
-        _rigidBody.angularVelocity = new Vector3(0f, 0f, 0f);
+        _rigidBody.velocity = Vector3.zero;
+        _rigidBody.angularVelocity = Vector3.zero;
         this.body.gameObject.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
     }
 
-
     public void BeginJump(int dist, float speed, float gravity)
     {
-        this.DisablePhysics();
+        this.EndFall();
         _status = JUMP;
         _gravity = gravity;
         _dy = speed;

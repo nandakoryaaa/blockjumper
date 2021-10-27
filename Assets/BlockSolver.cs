@@ -19,19 +19,15 @@ public class BlockSolver
                 continue;
             }
 
+            player.EndFall();
             player.Attach(b);
-            player.DisablePhysics();
+
             break;
 		}
 
         if (!player.IsAttached())
         {
-            player.body.SetY(Row.BLOCK_SIZE + 0.01f);
-            player.EnablePhysics();
-            for (int i = row.head; i != row.tail; i = row.Next(i))
-            {
-                row.blocks[i].EnableCollisions();
-            }
+            player.BeginFall();
         }
     }
 }

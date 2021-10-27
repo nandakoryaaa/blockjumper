@@ -8,7 +8,9 @@ public class Block
 
 	private Vector3[] _vertices;
 	private Vector3 _v = new Vector3(0, 0, 0);
-    private Collider _collider;
+    private BoxCollider _collider;
+    private MeshRenderer _renderer;
+    private bool _renderPending = true;
 
     public Block(int offset, float z, int h, int w, Color32 color)
     {
@@ -17,11 +19,11 @@ public class Block
         this.gameObject = new GameObject();
 		
 		_v.z = z;
-        this.gameObject.transform.position = _v;
+        this.SetPosition(_v);
 
-        var meshRenderer = this.gameObject.AddComponent<MeshRenderer>();
-        meshRenderer.material = new Material(Shader.Find("Standard"));
-        meshRenderer.material.SetColor("_Color", color);
+        _renderer = this.gameObject.AddComponent<MeshRenderer>();
+        _renderer.material = new Material(Shader.Find("Standard"));
+        _renderer.material.SetColor("_Color", color);
 
         var meshFilter = this.gameObject.AddComponent<MeshFilter>();
         meshFilter.mesh = new Mesh();
@@ -38,7 +40,7 @@ public class Block
         _vertices = new Vector3[]
         {
             v0, v1, v5, v4, // left
-            v0, v1, v2, v3, // bottom
+            v0, v3, v2, v1, // bottom
             v3, v7, v6, v2, // right
             v4, v5, v6, v7, // top
             v0, v4, v7, v3 // front
@@ -48,7 +50,7 @@ public class Block
         meshFilter.mesh.triangles = new int[]
         {
              0,  1,  2,  0,  2,  3,
-             4,  7,  6,  4,  6,  5,
+             4,  5,  6,  4,  6,  7,
              8,  9, 10,  8, 10, 11,
             12, 13, 14, 12, 14, 15,
             16, 17, 18, 16, 18, 19 
@@ -64,52 +66,47 @@ public class Block
         };
 
         _collider = this.gameObject.AddComponent<BoxCollider>();
-        this.DisableCollisions();
     }
 
-    public void EnableCollisions(bool withGravity = false)
-    {
-        _collider.enabled = true;
-    }
-
-    public void DisableCollisions()
-    {
-        _collider.enabled = false;
-    }
-
-    public void Update(int offset, int w, Color32 color)
+    public void Reshape(int offset, int w, Color32 color)
     {
         this.offset = offset;
-        this.width = w;
+        if (this.width != w) {
+            this.width = w;
 
-        _vertices[6].x = w;
-        _vertices[7].x = w;
-        _vertices[8].x = w;
-        _vertices[9].x = w;
-        _vertices[10].x = w;
-        _vertices[11].x = w;
-        _vertices[14].x = w;
-        _vertices[15].x = w;
-        _vertices[18].x = w;
-        _vertices[19].x = w;
+            _vertices[5].x = w;
+            _vertices[6].x = w;
+            _vertices[8].x = w;
+            _vertices[9].x = w;
+            _vertices[10].x = w;
+            _vertices[11].x = w;
+            _vertices[14].x = w;
+            _vertices[15].x = w;
+            _vertices[18].x = w;
+            _vertices[19].x = w;
 
-		var meshFilter = this.gameObject.GetComponent<MeshFilter>();
- 		meshFilter.mesh.vertices = _vertices;
-		meshFilter.mesh.RecalculateBounds();
+		    var meshFilter = this.gameObject.GetComponent<MeshFilter>();
+ 		    meshFilter.mesh.vertices = _vertices;
+		    meshFilter.mesh.RecalculateBounds();
+    
+            _v = _collider.size;
+            _v.x = w;
+            _collider.size = _v;
+            _collider.center = _v / 2;
+        }
 
-        this.gameObject.GetComponent<MeshRenderer>()
-        	.material.SetColor("_Color", color);
+        _renderer.material.SetColor("_Color", color);
     }
 
     public void Activate()
     {
         this.gameObject.SetActive(true);
+        _renderPending = true;
     }
     
     public void Deactivate()
     {
         this.gameObject.SetActive(false);
-        this.DisableCollisions();
     }
 
 	public bool IsActive() {
@@ -148,10 +145,16 @@ public class Block
         return this.gameObject.transform.position.y;
     }
 
-    public void MoveX(float dist)
+    public bool IsVisible()
     {
-		_v = this.gameObject.transform.position;
-		_v.x += dist;
-        this.gameObject.transform.position = _v;
+        bool result = _renderer.isVisible | _renderPending;
+        _renderPending = false;
+
+        return result;
     }
+
+    // public void debug() {
+    //     Debug.Log("x: " + this.GetX() + " w: " + this.width + " bounds: " + _renderer.bounds);
+    // }
+
 }

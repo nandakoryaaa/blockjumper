@@ -14,9 +14,11 @@ public class RowStrategyRight : IRowStrategy
             _v.x = b.GetX() + row.speed;
             b.SetPosition(_v);
         }
-        
+
         b = row.blocks[row.Prev(row.tail)];
-        if (b.GetX() >= Row.RIGHT_BORDER)
+
+//        if (b.GetX() >= Row.RIGHT_BORDER)
+        if (!b.IsVisible())
         {
             row.tail = row.Prev(row.tail);
             row.blocks[row.tail].Deactivate();

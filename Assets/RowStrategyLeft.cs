@@ -17,9 +17,12 @@ public class RowStrategyLeft : IRowStrategy
 
         b = row.blocks[row.head];
 
-        if (b.GetX() + b.width < Row.LEFT_BORDER) {
+//      if (b.GetX() + b.width < Row.LEFT_BORDER)
+        if (!b.IsVisible())
+        {
             row.head = row.Next(row.head);
             b.Deactivate();
+
         }
 
         row.Fill();
