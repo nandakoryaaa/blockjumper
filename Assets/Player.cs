@@ -56,7 +56,7 @@ public class Player
         _rigidBody.useGravity = false;
         _rigidBody.velocity = Vector3.zero;
         _rigidBody.angularVelocity = Vector3.zero;
-        this.body.gameObject.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+        this.body.gameObject.transform.rotation = Quaternion.Euler(Vector3.zero);
         _status = UNDEFINED;
     }
     /**
@@ -132,12 +132,10 @@ public class Player
     {
         this.EndFall();
         this.parent = block;
-        //_blockOffset = blockOffset;
         // позиция считается локальной относительно блока с момента прикрепления
         _position.x = blockOffset;
         _position.y = Row.BLOCK_SIZE;
         _position.z = 0;
-        //this.body.SetPosition(_position);
         _status = UNDEFINED;
     }
 
